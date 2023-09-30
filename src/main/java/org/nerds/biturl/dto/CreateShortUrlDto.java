@@ -14,11 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class CreateShortUrlDto {
     @NotNull
-    @Pattern(regexp = "((http|https)://)(www.)?"
-            + "[a-zA-Z0-9@:%._\\+~#?&//=]"
-            + "{2,256}\\.[a-z]"
-            + "{2,6}\\b([-a-zA-Z0-9@:%"
-            + "._\\+~#?&//=]*)", message = "Provided a invalid url")
+    @Pattern(regexp = "((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)",
+            message = "Provided a invalid url")
     @Size(max = 2000)
     private String url;
 }
