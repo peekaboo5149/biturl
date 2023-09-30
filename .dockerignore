@@ -1,0 +1,27 @@
+# Ignore Gradle build files
+build/
+.gradle/
+
+# Ignore generated files and directories
+bin/
+out/
+target/
+
+# Ignore IDE-specific files and directories
+.idea/
+.vscode/
+
+# Ignore version control system directories
+.git/
+.gitignore
+svn/
+
+# Ignore miscellaneous files
+*.log
+*.iml
+
+assets/
+docs/
+Dockerfile
+docker-compose.*
+*.md
