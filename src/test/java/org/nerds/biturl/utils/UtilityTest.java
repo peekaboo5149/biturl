@@ -2,8 +2,6 @@ package org.nerds.biturl.utils;
 
 import org.junit.jupiter.api.Test;
 
-import java.net.UnknownHostException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UtilityTest {
