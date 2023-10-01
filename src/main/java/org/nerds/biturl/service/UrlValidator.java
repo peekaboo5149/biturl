@@ -2,9 +2,10 @@ package org.nerds.biturl.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
@@ -20,13 +21,14 @@ public class UrlValidator {
                     .setSocketTimeout(timeoutInSeconds * 1000)
                     .build();
 
-            HttpClient httpClient = HttpClients.custom()
-                    .setDefaultRequestConfig(requestConfig)
-                    .build();
-
-            HttpGet httpGet = new HttpGet(url);
-            // Execute the HTTP request
-            HttpResponse response = httpClient.execute(httpGet);
+            final HttpClientBuilder clientBuilder = HttpClients.custom()
+                    .setDefaultRequestConfig(requestConfig);
+            HttpResponse response;
+            try (CloseableHttpClient httpClient = clientBuilder.build()) {
+                HttpGet httpGet = new HttpGet(url);
+                // Execute the HTTP request
+                response = httpClient.execute(httpGet);
+            }
 
             // Check if the response status code is in the 2xx range (indicating success)
             int statusCode = response.getStatusLine().getStatusCode();
@@ -35,7 +37,7 @@ public class UrlValidator {
                 return null;
             } else {
                 // The URL is not reachable or authentic
-                return "Invalid ERROR: StatusCode = " + statusCode;
+                return "ERROR: StatusCode = " + statusCode;
             }
         } catch (IOException e) {
             // An exception occurred (e.g., network error)

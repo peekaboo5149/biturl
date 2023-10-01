@@ -1,5 +1,6 @@
 package org.nerds.biturl.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,13 @@ public class ShortUrlController {
     private final ShortUrlService shortUrlService;
 
     @PostMapping
-    public ResponseEntity<ShortUrlResponse> createShortUrl(@RequestBody @Valid CreateShortUrlDto requestBody) {
+    public ResponseEntity<ShortUrlResponse> createShortUrl(HttpServletRequest req, @RequestBody @Valid CreateShortUrlDto requestBody) {
         log.info("Create Short Url Controller \uD83C\uDFC2");
         long start = System.currentTimeMillis();
         try {
             final String originalUrl = requestBody.getUrl();
-            String hashedUrl = shortUrlService.createShortUrl(originalUrl);
+            String token = req.getHeader("Authorization").substring(7);
+            String hashedUrl = shortUrlService.createShortUrl(originalUrl, token);
             return ResponseEntity.ok(ShortUrlResponse.builder()
                     .originalUrl(originalUrl)
                     .hashedUrl(hashedUrl)
@@ -42,7 +44,7 @@ public class ShortUrlController {
     }
 
     @GetMapping(Constants.JUST_REDIRECTION_ROUTE + "/{hashCode}")
-    public ResponseEntity<Void> redirectUrls(@PathVariable("hashCode") String hashCode) {
+    public ResponseEntity<Void> redirectUrls(HttpServletRequest req, @PathVariable("hashCode") String hashCode) {
         long start = System.currentTimeMillis();
         try {
             final String originalUrl = shortUrlService.getOriginalUrlFor(hashCode);

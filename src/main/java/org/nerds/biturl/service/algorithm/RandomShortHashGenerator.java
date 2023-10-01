@@ -12,7 +12,7 @@ public class RandomShortHashGenerator implements ShortUrlAlgorithm {
 
 
     @Override
-    public String generate(String originalUrl) throws Exception {
+    public String generate(String originalUrl, String userId) throws Exception {
         SecureRandom random = new SecureRandom();
         StringBuilder shortHash = new StringBuilder();
 
