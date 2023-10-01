@@ -7,4 +7,6 @@ public interface Constants {
     String JUST_REDIRECTION_ROUTE = "/redirect";
     String SHORT_URL_CACHE_IDENTIFICATION_KEY = "SHORT_URL_KEY";
     String SHORT_URL_CACHE_IDENTIFICATION_VALUE = "SHORT_URL_VALUE";
+    int RATE_LIMIT_EXCEEDED_STATUS_CODE = 429;
+    String RATE_LIMIT_EXCEEDED_MESSAGE = "Rate limit exceeded!";
 }

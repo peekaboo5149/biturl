@@ -1,5 +1,7 @@
 package org.nerds.biturl.config;
 
+import io.github.bucket4j.*;
+import io.github.bucket4j.local.SynchronizedBucket;
 import lombok.RequiredArgsConstructor;
 import org.nerds.biturl.repository.UserRepository;
 import org.nerds.biturl.service.ShortUrlAlgorithm;
@@ -22,6 +24,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Duration;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableRedisRepositories
@@ -29,6 +33,15 @@ public class ApplicationBeanConfig {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @Bean
+    public io.github.bucket4j.Bucket rateLimitBucket() {
+        Bandwidth limit = Bandwidth.classic(10, Refill.intervally(10, Duration.ofMinutes(1)));
+        BucketConfiguration bucketConfig = BucketConfiguration.builder()
+                .addLimit(limit)
+                .build();
+        return new SynchronizedBucket(bucketConfig, MathType.INTEGER_64_BITS, TimeMeter.SYSTEM_MILLISECONDS);
+    }
 
     @Bean
     public <T, V> RedisTemplate<T, V> redisTemplate(RedisConnectionFactory factory) {

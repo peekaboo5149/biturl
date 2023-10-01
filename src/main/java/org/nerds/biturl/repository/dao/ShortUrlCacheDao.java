@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.nerds.biturl.model.ShortUrl;
 import org.nerds.biturl.utils.Constants;
 import org.nerds.biturl.utils.Utility;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,11 +14,9 @@ import org.springframework.stereotype.Repository;
 @Slf4j
 public class ShortUrlCacheDao {
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final HashOperations<String, String, String> hashOperations;
 
-    public ShortUrlCacheDao(RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public ShortUrlCacheDao(@Autowired RedisTemplate<String, String> redisTemplate) {
         this.hashOperations = redisTemplate.opsForHash();
     }
 

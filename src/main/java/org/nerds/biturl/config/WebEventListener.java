@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class WebConfiguration implements ApplicationListener<WebServerInitializedEvent> {
+public class WebEventListener implements ApplicationListener<WebServerInitializedEvent> {
 
     @Override
     public void onApplicationEvent(WebServerInitializedEvent event) {
