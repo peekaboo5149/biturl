@@ -12,6 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,7 +26,11 @@ import java.util.List;
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "bt_users_email")
         })
-public class User implements UserDetails {
+public class User implements UserDetails, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 987654321L;
+
     @Id
     @Column(name = "bt_users_id")
     @GeneratedValue(strategy = GenerationType.UUID)

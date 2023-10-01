@@ -6,6 +6,7 @@ import org.nerds.biturl.expection.InvalidUrlException;
 import org.nerds.biturl.model.ShortUrl;
 import org.nerds.biturl.model.User;
 import org.nerds.biturl.repository.ShortUrlRepository;
+import org.nerds.biturl.repository.dao.ShortUrlCacheDao;
 import org.nerds.biturl.utils.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,19 +24,21 @@ public class ShortUrlService {
     private final UrlValidator urlValidator;
     @Autowired
     private final JwtService jwtService;
+    @Autowired
+    private final ShortUrlCacheDao shortUrlCache;
 
     public String createShortUrl(String originalUrl, String token) {
         if (originalUrl == null) {
             throw new InvalidUrlException("NULL", "Url cannot be null");
         }
-        String baseUrl = Utility.getRedirectionUrl() + "/";
-
-        // TODO : Check if url exist in cache
-        // If not then check in persistent database
+        String baseUrl = Utility.getRedirectionUrl().concat("/");
         final User user = jwtService.getUserDetails(token);
-        String hashedUrl = repository.getHashedCodeByOriginalUrl(originalUrl, user.getId());
+        // Get from cache
+        String hashedUrl = shortUrlCache.getHashedUrl(originalUrl, user.getId());
+        // If not then check in persistent database
+        if (Utility.isStringEmpty(hashedUrl))
+            hashedUrl = repository.getHashedCodeByOriginalUrl(originalUrl, user.getId());
         if (Utility.isStringNonEmpty(hashedUrl)) {
-            log.info("Url found in database");
             return baseUrl + hashedUrl;
         }
         //  Try to check if the url is reachable and authentic
@@ -53,7 +56,9 @@ public class ShortUrlService {
                     .user(user)
                     .build();
             repository.save(shortUrl);
-            log.info("Url saved in persistent database successfully");
+            // Store in cache
+            shortUrlCache.storeHashedUrl(shortUrl);
+            log.info("Url saved in persistent database and in cache successfully");
             return baseUrl + generatedHash;
         } catch (Exception e) {
             log.error("Error Creating a new short url ", e);
@@ -62,11 +67,18 @@ public class ShortUrlService {
     }
 
     public String getOriginalUrlFor(String hashCode) {
-        // TODO: GET FROM CACHE
-        String originalUrl = repository.getOriginalUrl(hashCode);
+        String originalUrl;
+        // GET FROM CACHE
+        originalUrl = shortUrlCache.getOriginalUrl(hashCode);
         if (Utility.isStringEmpty(originalUrl)) {
-            return null;
+            // ELSE GET FROM REPOSITORY
+            originalUrl = repository.getOriginalUrl(hashCode);
+            if (Utility.isStringEmpty(originalUrl)) {
+                return null;
+            }
         }
+        log.info("found original url before validation = " + originalUrl);
+        // validate the url
         final String error = urlValidator.validate(originalUrl);
         if (Utility.isStringNonEmpty(error)) {
             throw new InvalidUrlException(originalUrl, error);

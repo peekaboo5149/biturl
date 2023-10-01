@@ -15,4 +15,11 @@ spring:
       format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  # Redis Property
+  data:
+    redis:
+      host: localhost
+      port: 8001
+      password: biturl
+      timeout: 60000
 

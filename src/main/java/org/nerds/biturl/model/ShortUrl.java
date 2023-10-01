@@ -6,13 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "bt_urls")
-public class ShortUrl {
+public class ShortUrl implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 987654322L;
+
     @Id
     @Column(name = "bt_urls_id")
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,7 +30,6 @@ public class ShortUrl {
     private String hashedCode;
 
     @ManyToOne // This establishes a many-to-one relationship with User
-//    @Column(name = "bt_urls_created_by")
     @JoinColumn(name = "bt_urls_created_by") // This is the foreign key column in the short_urls table
     private User user;
 }
