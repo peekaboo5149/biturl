@@ -5,8 +5,12 @@ up:
 down:
 	@docker-compose down
 
-# TODO: Add gradle related stuff
-# TODO: Docker compatible
+build-jar:
+	@./gradlew clean build --no-daemon -x test
+
+image:
+	@docker build -t biturl:1.0.0 .
+	@docker build -t biturl:1.0.0 .
 
 # PHONY targets do not correspond to actual files; they are used for automation.
 .PHONY: up down

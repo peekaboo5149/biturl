@@ -25,3 +25,4 @@ docs/
 Dockerfile
 docker-compose.*
 *.md
+assets/

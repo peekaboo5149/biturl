@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.nerds'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -43,11 +43,16 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-// Custom task to build the JAR with a specific name
-tasks.register('buildBitUrlJar', Jar) {
-    archiveFileName = "biturl-${version}.jar"
-    from sourceSets.main.output
+// Use this command to build jar
+tasks.named('jar') {
+    enabled = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    archiveClassifier.set("")
     manifest {
-        attributes 'Main-Class': 'org.nerds.biturl.BiturlApplication' // Replace with your main application class
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Main-Class': 'org.nerds.biturl.BiturlApplication'
+        )
     }
 }
